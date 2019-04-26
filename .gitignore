@@ -1,4 +1,6 @@
 
-src/__pycache__/
+storage/__pycache__/
 
 \.idea/
+
+instance/
