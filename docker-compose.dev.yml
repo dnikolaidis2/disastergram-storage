@@ -1,6 +1,10 @@
 version: '3.7'
 
 services:
-  storage:
+  storage_1:
     volumes:
       - .:/user/src/app
+
+  storage_redis_1:
+    ports:
+      - "6380:6379"

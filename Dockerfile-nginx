@@ -1,0 +1,22 @@
+FROM tiangolo/uwsgi-nginx-flask:python3.6
+
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+
+WORKDIR /app
+
+COPY ./storage ./storage
+COPY ./instance ./instance
+
+COPY requirements.txt .
+
+COPY uwsgi.ini .
+
+RUN pip install --no-cache -r requirements.txt
+
+ENV FLASK_ENV nginx
+ENV UPLOAD_FOLDER /app/storage/images
+
+ENV STATIC_URL /imstore
+ENV STATIC_PATH /app/storage/images/
+ENV FLASK_APP_INSTANCE /app/instance

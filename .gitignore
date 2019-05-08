@@ -4,3 +4,4 @@ storage/__pycache__/
 \.idea/
 
 instance/
+storage/interfaces/__pycache__/
