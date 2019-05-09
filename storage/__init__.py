@@ -53,6 +53,9 @@ def create_app(test_config=None):
         raise Exception('No redis host was provided. '
                         'REDIS_HOST environment variable cannot be omitted')
 
+    # Make sure the upload folder exists
+    os.makedirs(app.config.get('UPLOAD_FOLDER', '/'), exist_ok=True)
+
     # INIT
     
     global redis
