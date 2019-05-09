@@ -1,6 +1,6 @@
-from flask import Blueprint, jsonify, request, current_app, abort, send_file, make_response
+from flask import Blueprint, jsonify, request, current_app, abort
 from storage import stats, app_pubkey, redis
-from storage.utils import check_token
+from storage.utils import check_token, send_image
 import os
 from json import JSONDecodeError, loads, dumps
 
@@ -87,14 +87,7 @@ def get_image(image_id, access_token):
 
     stats.increment_read_requests()
 
-    if current_app.env != 'nginx':
-        return send_file('images/{}'.format(metadata['filename']), mimetype=metadata['mimetype'])
-    else:
-        resp = make_response('')
-        resp.headers['X-Accel-Redirect'] = \
-            '{}/{}'.format(current_app.config.get('STATIC_URL', 'imstore'), metadata['filename'])
-        resp.headers['Content-Type'] = metadata['mimetype']
-        return resp
+    return send_image(metadata['filename'], metadata['mimetype'])
 
 
 @bp.route('/stats', methods=['GET'])

@@ -1,4 +1,4 @@
-from flask import current_app, abort
+from flask import current_app, abort, make_response, send_file
 from datetime import timedelta
 import jwt
 
@@ -41,3 +41,14 @@ def check_token(pub_key, token, sub, purpose):
         abort(403, 'Token purpose mismatch.')
 
     return True
+
+
+def send_image(filename, mimetype):
+    if current_app.env == 'nginx':
+        resp = make_response('')
+        resp.headers['X-Accel-Redirect'] = \
+            '{}/{}'.format(current_app.config.get('STATIC_URL', 'imstore'), filename)
+        resp.headers['Content-Type'] = mimetype
+        return resp
+    else:
+        return send_file('images/{}'.format(filename), mimetype=mimetype)

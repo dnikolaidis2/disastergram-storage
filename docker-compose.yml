@@ -5,6 +5,13 @@ services:
     build: .
     ports:
       - "5002:5000"
+    depends_on:
+      - storage_redis_1
+    environment:
+      STORAGE_ID: 1
+      BASEURL: localhost:5002
+      DOCKER_HOST: storage_1:80
+      REDIS_HOST: storage_redis_1
 
   storage_redis_1:
     image: redis:5.0
