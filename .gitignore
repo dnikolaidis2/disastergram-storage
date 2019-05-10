@@ -5,3 +5,7 @@ storage/__pycache__/
 
 instance/
 storage/interfaces/__pycache__/
+
+supervisord\.log
+
+supervisord\.pid

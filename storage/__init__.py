@@ -2,14 +2,17 @@ from flask import Flask
 from os import environ, path
 from datetime import timedelta
 from storage.stats import Stats
+from storage.zoo import Zoo
 from redis import Redis
+from kazoo.client import KazooClient
 import urllib.parse
 import requests
 import os
 
 stats = None
 redis = None
-app_address = 'http://app:5000'
+zk = None
+app_address = 'http://disastergram.nikolaidis.tech/'
 app_pubkey = None
 
 
@@ -29,6 +32,7 @@ def create_app(test_config=None):
         DOCKER_BASEURL='http://{}'.format(environ.get('DOCKER_HOST', '')),
         REDIS_HOST=environ.get('REDIS_HOST'),
         REDIS_PORT=int(environ.get('REDIS_PORT', '6379')),
+        ZOOKEEPER_CONNECTION_STR=environ.get('ZOOKEEPER_CONNECTION_STR', 'zoo1,zoo2,zoo3'),
     )
 
     if test_config is None:
@@ -61,11 +65,22 @@ def create_app(test_config=None):
     global redis
     redis = Redis(host=app.config.get('REDIS_HOST'), port=app.config.get('REDIS_PORT'), db=0)
 
-    global app_pubkey
-    app_pubkey = requests.get(urllib.parse.urljoin(app_address, '/api/pubkey')).json()['public_key']
-
     global stats
     stats = Stats(redis)
+
+    znode_data = {
+        'BASEURL': app.config['BASEURL'],
+        'DOCKER_HOST': app.config['DOCKER_HOST'],
+        'DOCKER_BASEURL': app.config['DOCKER_BASEURL']
+    }
+
+    global zk
+    zk = Zoo(KazooClient(hosts=app.config['ZOOKEEPER_CONNECTION_STR'], logger=app.logger),
+             app.config['STORAGE_ID'],
+             znode_data)
+
+    global app_pubkey
+    app_pubkey = requests.get(urllib.parse.urljoin(app_address, '/api/pubkey')).json()['public_key']
 
     from storage import service
 
