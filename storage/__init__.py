@@ -2,9 +2,9 @@ from flask import Flask
 from os import environ, path
 from datetime import timedelta
 from storage.stats import Stats
-from storage.zoo import Zoo
+from storage.zookeeper import StorageZoo
 from redis import Redis
-from kazoo.client import KazooClient
+from kazoo.client import KazooClient, KazooRetry
 import urllib.parse
 import requests
 import os
@@ -75,7 +75,9 @@ def create_app(test_config=None):
     }
 
     global zk
-    zk = Zoo(KazooClient(hosts=app.config['ZOOKEEPER_CONNECTION_STR'], logger=app.logger),
+    zk = Zoo(KazooClient(hosts=app.config['ZOOKEEPER_CONNECTION_STR'],
+                         connection_retry=KazooRetry(max_tries=-1),
+                         logger=app.logger),
              app.config['STORAGE_ID'],
              znode_data)
 
