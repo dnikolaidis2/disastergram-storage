@@ -11,7 +11,7 @@ def check_token(pub_key, token, sub, purpose):
         token_payload = jwt.decode(token,
                                    pub_key,
                                    leeway=current_app.config.get('AUTH_LEEWAY', timedelta(seconds=30)), # give 30 second leeway on time checks
-                                   issuer='applogic',
+                                   issuer='app-logic',
                                    algorithms='RS256')
     except jwt.InvalidSignatureError:
         # signature of token does not match
