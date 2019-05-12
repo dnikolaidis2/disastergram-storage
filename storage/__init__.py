@@ -75,11 +75,11 @@ def create_app(test_config=None):
     }
 
     global zk
-    zk = Zoo(KazooClient(hosts=app.config['ZOOKEEPER_CONNECTION_STR'],
-                         connection_retry=KazooRetry(max_tries=-1),
-                         logger=app.logger),
-             app.config['STORAGE_ID'],
-             znode_data)
+    zk = StorageZoo(KazooClient(hosts=app.config['ZOOKEEPER_CONNECTION_STR'],
+                                connection_retry=KazooRetry(max_tries=-1),
+                                logger=app.logger),
+                    app.config['STORAGE_ID'],
+                    znode_data)
 
     global app_pubkey
     app_pubkey = requests.get(urllib.parse.urljoin(app_address, '/api/pubkey')).json()['public_key']
