@@ -5,7 +5,6 @@ import json
 
 
 class StorageZoo:
-    _background_thread = None
 
     def __init__(self, client, storage_id, znode_data):
         self._client = client
@@ -52,9 +51,9 @@ class StorageZoo:
     def add_storage_watcher(self):
         @self._client.DataWatch("/storage/{}".format(self._storage_id))
         def storage_watcher(data, stat, event):
-            self._client.logger.warning('Is there anybody out there')
             if event is not None:
                 # Not in init phase
                 if event.type == EventType.DELETED:
                     # We only care if the node has been deleted for now
+                    self._client.logger.warning('Recreating deleted znode')
                     self.create_znode()
