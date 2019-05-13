@@ -12,7 +12,7 @@ import os
 stats = None
 redis = None
 zk = None
-app_address = 'http://disastergram.nikolaidis.tech/'
+app_address = 'https://disastergram.nikolaidis.tech/'
 app_pubkey = None
 
 
