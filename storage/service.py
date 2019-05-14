@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request, current_app, abort
-from storage import stats, app_pubkey, redis
+from storage import stats, redis
 from storage.utils import check_token, send_image
 import os
 from json import JSONDecodeError, loads, dumps
@@ -25,7 +25,7 @@ def bad_request_handler(error):
 @bp.route('/<image_id>/<auth_token>', methods=['POST'])
 def upload_image(image_id, auth_token):
     # check that we got the appropriate token
-    if not check_token(app_pubkey, auth_token, image_id, 'CREATE'):
+    if not check_token(auth_token, image_id, 'CREATE'):
         abort(403, 'Token could not be verified')
 
     # check if the post request has the file part
@@ -57,7 +57,7 @@ def upload_image(image_id, auth_token):
 @bp.route('/<image_id>/<auth_token>', methods=['DELETE'])
 def delete_image(image_id, auth_token):
     # check that we got the appropriate token
-    if not check_token(app_pubkey, auth_token, image_id, 'DELETE'):
+    if not check_token(auth_token, image_id, 'DELETE'):
         abort(403, 'Token could not be verified')
 
     metadata = None
@@ -76,7 +76,7 @@ def delete_image(image_id, auth_token):
 @bp.route('/<image_id>/<access_token>', methods=['GET'])
 def get_image(image_id, access_token):
     # check that we got the appropriate token
-    if not check_token(app_pubkey, access_token, image_id, 'READ'):
+    if not check_token(access_token, image_id, 'READ'):
         abort(403, 'Token could not be verified')
 
     metadata = None

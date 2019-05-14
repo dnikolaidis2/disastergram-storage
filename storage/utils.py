@@ -3,15 +3,15 @@ from datetime import timedelta
 import jwt
 
 
-def check_token(pub_key, token, sub, purpose):
+def check_token(token, sub, purpose):
 
     token_payload = None
     # verify token
     try:
         token_payload = jwt.decode(token,
-                                   pub_key,
+                                   current_app.config.get('APP_PUBLIC_KEY'),
                                    leeway=current_app.config.get('AUTH_LEEWAY', timedelta(seconds=30)), # give 30 second leeway on time checks
-                                   issuer='app-logic',
+                                   issuer=current_app.config.get('APP_TOKEN_ISSUER', 'app-logic'),
                                    algorithms='RS256')
     except jwt.InvalidSignatureError:
         # signature of token does not match

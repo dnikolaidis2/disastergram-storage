@@ -5,15 +5,11 @@ from storage.stats import Stats
 from storage.zookeeper import StorageZoo
 from redis import Redis
 from kazoo.client import KazooClient, KazooRetry
-import urllib.parse
-import requests
 import os
 
 stats = None
 redis = None
 zk = None
-app_address = 'https://disastergram.nikolaidis.tech/'
-app_pubkey = None
 
 
 def create_app(test_config=None):
@@ -81,8 +77,12 @@ def create_app(test_config=None):
                     app.config['STORAGE_ID'],
                     znode_data)
 
-    global app_pubkey
-    app_pubkey = requests.get(urllib.parse.urljoin(app_address, '/api/pubkey')).json()['public_key']
+    zk.wait_for_znode('/app')
+    app_info = zk.get_znode_data('/app')
+    if app_info is None:
+        raise Exception('Could get retrieve app info from zookeeper')
+    app.config['APP_PUBLIC_KEY'] = app_info['PUBLIC_KEY']
+    app.config['APP_TOKEN_ISSUER'] = app_info['TOKEN_ISSUER']
 
     from storage import service
 
