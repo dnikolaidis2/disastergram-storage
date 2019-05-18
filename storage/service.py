@@ -50,7 +50,6 @@ def upload_image(image_id, auth_token):
         abort(500, 'Could not save image metadata')
 
     stats.increment_write_delete_requests()
-    redis.bgsave()
     return jsonify(status='OK'), 201
 
 
@@ -69,7 +68,6 @@ def delete_image(image_id, auth_token):
     os.remove(metadata['filepath'])
     redis.delete(image_id)
     stats.increment_write_delete_requests()
-    redis.bgsave()
     return jsonify(status='OK')
 
 
