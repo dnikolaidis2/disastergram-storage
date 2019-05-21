@@ -82,4 +82,7 @@ class StorageZoo:
         except ZookeeperError:
             return None
 
-        return json.loads(node[0])
+        try:
+            return json.loads(node[0])
+        except json.JSONDecodeError:
+            return None
